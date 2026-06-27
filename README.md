@@ -6,7 +6,7 @@
 
 ## Screenshot
 
-![Zora Chat Application](docs/screenshot.png)
+![Zora Chat Application](docs/image.png)
 
 ---
 
