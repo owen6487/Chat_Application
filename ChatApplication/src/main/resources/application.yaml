@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ChatApplication
+
+data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/chatdb}
+      database: chatdb
+groq:
+  chat:
+    apiurl: ${GROQ_API_URL:}
+    apikey: ${GROQ_API_KEY:}
+    model: ${GROQ_MODEL:}
+    max-tokens: ${GROQ_MAX_TOKENS:}

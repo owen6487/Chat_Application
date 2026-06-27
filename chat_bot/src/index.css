@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* Markdown rendering for bot messages */
+.markdown-body {
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.7;
+}
+
+.markdown-body p {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-body strong {
+  font-weight: 700;
+  color: #93c5fd; /* blue-300 — stands out nicely on dark bg */
+}
+
+.markdown-body em {
+  font-style: italic;
+}
+
+.markdown-body code {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.875em;
+  font-family: monospace;
+}
+
+.markdown-body pre {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85em;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
