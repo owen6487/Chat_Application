@@ -1,8 +1,7 @@
 spring:
   application:
     name: ChatApplication
-
-data:
+  data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017/chatdb}
       database: chatdb

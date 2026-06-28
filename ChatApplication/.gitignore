@@ -36,6 +36,5 @@ build/
 .env
 DotenvConfig_EXPLAINED.md
 
-DotenvConfig.java
 HELP.md
 .env.example
