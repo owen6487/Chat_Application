@@ -4,7 +4,6 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI}
-      database: chatdb
 groq:
   chat:
     apiurl: ${GROQ_API_URL:}
