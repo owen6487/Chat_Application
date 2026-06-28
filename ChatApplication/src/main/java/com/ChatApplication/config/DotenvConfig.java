@@ -39,6 +39,7 @@ public class DotenvConfig implements EnvironmentPostProcessor {
             // In production (e.g. Render), .env file won't exist.
             // Spring will use OS environment variables directly via application.yaml.
             System.out.println("Dotenv: .env file not found, using OS environment variables.");
+            System.out.println("DEBUG MONGO_URI FROM OS: '" + System.getenv("MONGO_URI") + "'");
         }
     }
 
