@@ -3,7 +3,7 @@ spring:
     name: ChatApplication
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/chatdb}
+      uri: ${MONGO_URI:}
       database: chatdb
 groq:
   chat:
