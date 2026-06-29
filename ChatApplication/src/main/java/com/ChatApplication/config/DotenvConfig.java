@@ -30,8 +30,7 @@ public class DotenvConfig implements EnvironmentPostProcessor {
         addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_MODEL");
         addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_API_URL");
         addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_MAX_TOKENS");
-
-        addMongoUri(dotenvProperties, environment, dotenv);
+        addIfAbsent(dotenvProperties, environment, dotenv, "MONGO_URI");
 
         // 3. Add to Spring environment with HIGH priority (addFirst)
         if (!dotenvProperties.isEmpty()) {
@@ -40,30 +39,14 @@ public class DotenvConfig implements EnvironmentPostProcessor {
         }
         
         // 4. Debug print to verify OS environment variables
-        if (System.getenv("MONGO_URI") != null) {
+        String mongoUri = System.getenv("MONGO_URI");
+        if (mongoUri != null && !mongoUri.isEmpty()) {
             System.out.println("DEBUG: Found MONGO_URI from OS Environment Variables.");
-        }
-    }
-
-    private void addMongoUri(Map<String, Object> target, ConfigurableEnvironment env, Dotenv dotenv) {
-        String springKey = "spring.data.mongodb.uri";
-        if (env.containsProperty(springKey))
-            return;
-
-        String value = dotenv.get("MONGO_URI");
-        if (value != null) {
-            target.put(springKey, value);
-        }
-    }
-
-    private void addMongoUriFromOsEnv(Map<String, Object> target, ConfigurableEnvironment env) {
-        String springKey = "spring.data.mongodb.uri";
-        if (env.containsProperty(springKey))
-            return;
-
-        String value = System.getenv("MONGO_URI");
-        if (value != null) {
-            target.put(springKey, value);
+            if (mongoUri.contains("localhost")) {
+                System.out.println("WARNING: MONGO_URI contains 'localhost'. It will not connect to MongoAtlas!");
+            }
+        } else {
+            System.out.println("DEBUG: MONGO_URI is missing or empty in OS Environment Variables!");
         }
     }
 
@@ -71,7 +54,7 @@ public class DotenvConfig implements EnvironmentPostProcessor {
         if (env.containsProperty(key))
             return;
         String value = dotenv.get(key);
-        if (value != null) {
+        if (value != null && !value.trim().isEmpty()) {
             target.put(key, value);
         }
     }
