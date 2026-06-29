@@ -1,9 +1,17 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: ChatApplication
   data:
     mongodb:
-      uri: "${MONGO_URI}"
+      # IMPORTANT: Set MONGO_URI environment variable!
+      # Examples:
+      #   Local: mongodb://localhost:27017/chatdb
+      #   Cloud (Atlas): mongodb+srv://user:pass@cluster.mongodb.net/chatdb?retryWrites=true&w=majority
+      # On Render: Set in Environment section of your service dashboard
+      uri: ${MONGO_URI:mongodb://NOT_CONFIGURED}
+      auto-index-creation: false
 groq:
   chat:
     apiurl: ${GROQ_API_URL:}

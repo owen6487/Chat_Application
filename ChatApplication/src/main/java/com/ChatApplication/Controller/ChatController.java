@@ -15,11 +15,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-
 public class ChatController {
 
-    private ChatService chatService;
-    private GroqService groqService;
+    private final ChatService chatService;
+    private final GroqService groqService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
@@ -84,11 +83,31 @@ public class ChatController {
     @GetMapping("/debug/env")
     public ResponseEntity<Map<String, String>> debugEnv() {
         Map<String, String> info = new HashMap<>();
-        info.put("MONGO_URI_present", System.getenv("MONGO_URI") != null ? "YES" : "NO");
-        info.put("MONGO_URI_preview",
-                System.getenv("MONGO_URI") != null
-                        ? System.getenv("MONGO_URI").substring(0, Math.min(30, System.getenv("MONGO_URI").length()))
-                        : "NULL");
+
+        // Check system environment variable
+        String mongoUriEnv = System.getenv("MONGO_URI");
+        info.put("MONGO_URI_env_present", mongoUriEnv != null ? "YES" : "NO");
+        if (mongoUriEnv != null) {
+            info.put("MONGO_URI_env_preview", mongoUriEnv.substring(0, Math.min(50, mongoUriEnv.length())) + "...");
+        }
+
+        // Check what Spring resolved (from any source: env, application.yaml, etc.)
+        String mongoUriSpring = System.getProperty("spring.data.mongodb.uri");
+        if (mongoUriSpring == null) {
+            // Try to get from environment
+            mongoUriSpring = mongoUriEnv;
+        }
+        info.put("MongoDB_URI_resolved", mongoUriSpring != null
+                ? mongoUriSpring.substring(0, Math.min(50, mongoUriSpring.length())) + "..."
+                : "NOT RESOLVED - CHECK ENV VARS");
+
+        // Check Groq config
+        info.put("GROQ_API_KEY_present", System.getenv("GROQ_API_KEY") != null ? "YES" : "NO");
+        info.put("GROQ_API_URL_present", System.getenv("GROQ_API_URL") != null ? "YES" : "NO");
+
+        info.put("Java_version", System.getProperty("java.version"));
+        info.put("Active_profiles", String.join(",", org.springframework.core.env.Environment.class.getSimpleName()));
+
         return ResponseEntity.ok(info);
     }
 }
