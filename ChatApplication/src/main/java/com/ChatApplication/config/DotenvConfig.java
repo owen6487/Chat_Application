@@ -11,40 +11,65 @@ import org.springframework.lang.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class DotenvConfig implements EnvironmentPostProcessor {
     public DotenvConfig() {
     }
 
-
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, @Nullable SpringApplication application) {
-        try {
-            Dotenv dotenv = Dotenv.configure()
-                    .ignoreIfMissing()
-                    .load();
+        
+        // 1. Load Dotenv (silently ignores missing file in production)
+        Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
 
-            Map<String ,Object> dotenvProperties = new HashMap<>();
-            addIfAbsent(dotenvProperties , environment ,dotenv ,"GROQ_API_KEY");
-            addIfAbsent(dotenvProperties,environment,dotenv,"GROQ_MODEL");
-            addIfAbsent(dotenvProperties,environment,dotenv,"GROQ_API_URL");
-            addIfAbsent(dotenvProperties,environment,dotenv,"GROQ_MAX_TOKENS");
-            addIfAbsent(dotenvProperties,environment,dotenv,"MONGO_URI");
+        Map<String, Object> dotenvProperties = new HashMap<>();
+        
+        // 2. Add variables to our map
+        addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_API_KEY");
+        addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_MODEL");
+        addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_API_URL");
+        addIfAbsent(dotenvProperties, environment, dotenv, "GROQ_MAX_TOKENS");
 
-            if(!dotenvProperties.isEmpty()){
-                environment.getPropertySources()
-                        .addLast(new MapPropertySource("dotenvProperties",dotenvProperties));
-            }
-        } catch (Exception e) {
-            // In production (e.g. Render), .env file won't exist.
-            // Spring will use OS environment variables directly via application.yaml.
-            System.out.println("Dotenv: .env file not found, using OS environment variables.");
-            System.out.println("DEBUG MONGO_URI FROM OS: '" + System.getenv("MONGO_URI") + "'");
+        addMongoUri(dotenvProperties, environment, dotenv);
+
+        // 3. Add to Spring environment with HIGH priority (addFirst)
+        if (!dotenvProperties.isEmpty()) {
+            environment.getPropertySources()
+                    .addFirst(new MapPropertySource("dotenvProperties", dotenvProperties));
+        }
+        
+        // 4. Debug print to verify OS environment variables
+        if (System.getenv("MONGO_URI") != null) {
+            System.out.println("DEBUG: Found MONGO_URI from OS Environment Variables.");
+        }
+    }
+
+    private void addMongoUri(Map<String, Object> target, ConfigurableEnvironment env, Dotenv dotenv) {
+        String springKey = "spring.data.mongodb.uri";
+        if (env.containsProperty(springKey))
+            return;
+
+        String value = dotenv.get("MONGO_URI");
+        if (value != null) {
+            target.put(springKey, value);
+        }
+    }
+
+    private void addMongoUriFromOsEnv(Map<String, Object> target, ConfigurableEnvironment env) {
+        String springKey = "spring.data.mongodb.uri";
+        if (env.containsProperty(springKey))
+            return;
+
+        String value = System.getenv("MONGO_URI");
+        if (value != null) {
+            target.put(springKey, value);
         }
     }
 
     private void addIfAbsent(Map<String, Object> target, ConfigurableEnvironment env, Dotenv dotenv, String key) {
-        if (env.containsProperty(key)) return;
+        if (env.containsProperty(key))
+            return;
         String value = dotenv.get(key);
         if (value != null) {
             target.put(key, value);
@@ -52,6 +77,3 @@ public class DotenvConfig implements EnvironmentPostProcessor {
     }
 
 }
-
-
-
