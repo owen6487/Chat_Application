@@ -12,5 +12,4 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 
-# This forces Spring to override the application.yml defaults at startup
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.data.mongodb.uri=${MONGO_URI}"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
