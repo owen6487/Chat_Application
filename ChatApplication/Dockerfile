@@ -10,10 +10,13 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
+
+# Explicitly tell the container to map Render variables to Spring properties
+ENV MONGO_URI=${MONGO_URI}
+ENV GROQ_API_KEY=${GROQ_API_KEY}
+ENV GROQ_API_URL=${GROQ_API_URL}
+ENV GROQ_MODEL=${GROQ_MODEL}
+ENV GROQ_MAX_TOKENS=${GROQ_MAX_TOKENS}
+
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java -jar app.jar \
-    --spring.data.mongodb.uri=$MONGO_URI \
-    --groq.chat.apiurl=$GROQ_API_URL \
-    --groq.chat.apikey=$GROQ_API_KEY \
-    --groq.chat.model=$GROQ_MODEL \
-    --groq.chat.max-tokens=$GROQ_MAX_TOKENS"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
