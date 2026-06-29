@@ -11,4 +11,9 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar \
+    --spring.data.mongodb.uri=$MONGO_URI \
+    --groq.chat.apiurl=$GROQ_API_URL \
+    --groq.chat.apikey=$GROQ_API_KEY \
+    --groq.chat.model=$GROQ_MODEL \
+    --groq.chat.max-tokens=$GROQ_MAX_TOKENS"]
