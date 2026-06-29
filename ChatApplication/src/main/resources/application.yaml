@@ -1,12 +1,14 @@
 spring:
+  config:
   application:
     name: ChatApplication
   data:
     mongodb:
-      uri: ${MONGO_URI}
+      uri: "${MONGO_URI}"
 groq:
   chat:
     apiurl: ${GROQ_API_URL:}
     apikey: ${GROQ_API_KEY:}
     model: ${GROQ_MODEL:}
     max-tokens: ${GROQ_MAX_TOKENS:}
+
